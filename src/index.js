@@ -29,13 +29,12 @@ function checksCreateTodosUserAvailability(request, response, next) {
   const checkPlanPro = users.find((users) => users.pro === true) ||
     users.find((users) => users.todos.length < 10);
 
-  if (checkPlanPro) {
-    request.user = user;
-    return next();
-  } else {
-    response.status(403).json({ message: "You not can created todos !" });
+  if (!checkPlanPro) {
+    return response.status(403).json({ message: "You not can created todos !" });
   }
 
+  request.user = user;
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
@@ -43,17 +42,20 @@ function checksTodoExists(request, response, next) {
   const { username } = request.headers;
 
   const user = users.find((user) => user.username === username);
+
   if (!user) {
-    return response.status(400).json({ error: "users not found" })
+    return response.status(400).json({ error: "users not found" });
   }
 
   const todo = user.todos.find((todo) => todo.id = id);
   if (!todo) {
-    return response.status(404).json({ error: "todo not exists" })
-  } else
-    if (!validate(id)) {
-      return response.status(400).json({ error: "id must be UUID" });
-    }
+    return response.status(404).json({ error: "todo not exists" });
+  }
+    
+  if (!validate(id)) {
+    return response.status(400).json({ error: "id must be UUID" });
+  }
+
   request.todo = todo;
   request.user = user;
 
@@ -66,8 +68,9 @@ function findUserById(request, response, next) {
   const user = users.find((users) => users.id === id);
 
   if (!user) {
-    response.status(404).json({ message: 'User not found' });
+    return response.status(404).json({ message: 'User not found' });
   }
+
   request.user = user;
   return next();
 }
