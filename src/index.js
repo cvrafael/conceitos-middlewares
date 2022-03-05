@@ -51,7 +51,7 @@ function checksTodoExists(request, response, next) {
   if (!todo) {
     return response.status(404).json({ error: "todo not exists" })
   } else
-    if (!validate(id, 4)) {
+    if (!validate(id)) {
       return response.status(400).json({ error: "id must be UUID" });
     }
   request.todo = todo;
