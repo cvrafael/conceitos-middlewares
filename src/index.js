@@ -24,12 +24,11 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  const { user } = request;
+  const { user, important } = request;
 
-  const checkPlanPro = users.find((users) => users.pro === true) ||
-    users.find((users) => users.todos.length < 10);
+  let canCreateTodo = user.pro === true || user.todos.length < 10;
 
-  if (!checkPlanPro) {
+  if (!canCreateTodo) {
     return response.status(403).json({ message: "You not can created todos !" });
   }
 
@@ -44,18 +43,18 @@ function checksTodoExists(request, response, next) {
   const user = users.find((user) => user.username === username);
 
   if (!user) {
-    return response.status(400).json({ error: "users not found" });
+    return response.status(404).json({ error: "users not found" });
+  }
+
+  if (!validate(id)) {
+    return response.status(400).json({ error: "id must be UUID" });
   }
 
   const todo = user.todos.find((todo) => todo.id = id);
   if (!todo) {
     return response.status(404).json({ error: "todo not exists" });
   }
-    
-  if (!validate(id)) {
-    return response.status(400).json({ error: "id must be UUID" });
-  }
-
+  
   request.todo = todo;
   request.user = user;
 
