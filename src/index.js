@@ -50,11 +50,11 @@ function checksTodoExists(request, response, next) {
     return response.status(400).json({ error: "id must be UUID" });
   }
 
-  const todo = user.todos.find((todo) => todo.id = id);
+  const todo = user.todos.find((todo) => todo.id == id);
   if (!todo) {
     return response.status(404).json({ error: "todo not exists" });
   }
-  
+
   request.todo = todo;
   request.user = user;
 
